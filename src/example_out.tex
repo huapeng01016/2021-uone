@@ -1,0 +1,466 @@
+\documentclass{ctexart}
+
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{ulem}
+\usepackage[table]{xcolor}
+\usepackage{float}
+
+\begin{document}
+
+\section{Introduction}
+We use Stata's \textbf{dyntext} command with \texttt{dd\_do} tag 
+to produce the table, then use \textbf{collect export} to save 
+the table to a tex file. Then we may either use 
+\texttt{dd\_include} tag or LaTeX's input to include 
+the table in the document. 
+
+\section{Analysis}
+We first include a simple table.
+
+% produce the table with dd_do, the section is in a LaTeX
+% comment block since we only want the file it produced 
+% when processed through dyntext but not the block itself
+\iffalse
+. use auto_zh.dta, clear
+(1978年汽车数据)
+
+. collect clear
+
+. table (国籍 维修记录78) (), totals(维修记录78)
+
+-------------------------------
+                   |  Frequency
+-------------------+-----------
+国籍               |           
+  国内             |           
+    1978年维修记录 |           
+      1            |          2
+      2            |          8
+      3            |         27
+      4            |          9
+      5            |          2
+  国外             |           
+    1978年维修记录 |           
+      3            |          3
+      4            |          9
+      5            |          9
+  Total            |           
+    1978年维修记录 |           
+      1            |          2
+      2            |          8
+      3            |         30
+      4            |         18
+      5            |         11
+-------------------------------
+
+. collect export tab0.tex, tableonly replace
+(collection Table exported to file tab0.tex)
+
+\fi
+
+We may include the table using \texttt{dd\_include} tag. It will 
+include the content of tab0.tex in the transformed tex file, hence 
+remove future dependency to tab0.tex.  
+
+\begin{table}[H]
+\centering
+\caption{My two-way table caption.}
+\begin{tabular}{ll}
+\cline{1-2}
+\multicolumn{1}{c}{} &
+  \multicolumn{1}{|r}{Frequency} \\
+\cline{1-2}
+\multicolumn{1}{l}{国籍} &
+  \multicolumn{1}{|r}{} \\
+\multicolumn{1}{l}{\hspace{1em}国内} &
+  \multicolumn{1}{|r}{} \\
+\multicolumn{1}{l}{\hspace{2em}1978年维修记录} &
+  \multicolumn{1}{|r}{} \\
+\multicolumn{1}{l}{\hspace{3em}1} &
+  \multicolumn{1}{|r}{2} \\
+\multicolumn{1}{l}{\hspace{3em}2} &
+  \multicolumn{1}{|r}{8} \\
+\multicolumn{1}{l}{\hspace{3em}3} &
+  \multicolumn{1}{|r}{27} \\
+\multicolumn{1}{l}{\hspace{3em}4} &
+  \multicolumn{1}{|r}{9} \\
+\multicolumn{1}{l}{\hspace{3em}5} &
+  \multicolumn{1}{|r}{2} \\
+\multicolumn{1}{l}{\hspace{1em}国外} &
+  \multicolumn{1}{|r}{} \\
+\multicolumn{1}{l}{\hspace{2em}1978年维修记录} &
+  \multicolumn{1}{|r}{} \\
+\multicolumn{1}{l}{\hspace{3em}3} &
+  \multicolumn{1}{|r}{3} \\
+\multicolumn{1}{l}{\hspace{3em}4} &
+  \multicolumn{1}{|r}{9} \\
+\multicolumn{1}{l}{\hspace{3em}5} &
+  \multicolumn{1}{|r}{9} \\
+\multicolumn{1}{l}{\hspace{1em}Total} &
+  \multicolumn{1}{|r}{} \\
+\multicolumn{1}{l}{\hspace{2em}1978年维修记录} &
+  \multicolumn{1}{|r}{} \\
+\multicolumn{1}{l}{\hspace{3em}1} &
+  \multicolumn{1}{|r}{2} \\
+\multicolumn{1}{l}{\hspace{3em}2} &
+  \multicolumn{1}{|r}{8} \\
+\multicolumn{1}{l}{\hspace{3em}3} &
+  \multicolumn{1}{|r}{30} \\
+\multicolumn{1}{l}{\hspace{3em}4} &
+  \multicolumn{1}{|r}{18} \\
+\multicolumn{1}{l}{\hspace{3em}5} &
+  \multicolumn{1}{|r}{11} \\
+\cline{1-2}
+\end{tabular}
+\caption{Include table with \texttt{dd\_include}.}
+\end{table}
+
+
+Now we include a large table.
+
+% produce the table with dd_do, the section is in a LaTeX
+% comment block since we only want the file it produced 
+% when processed through dyntext but not the block itself
+\iffalse
+. use auto_zh.dta, clear
+(1978年汽车数据)
+
+. collect clear
+
+. table (var) (维修记录78),              ///
+>       statistic(mean 价格)          ///
+>       statistic(sd 价格)                              ///      
+>           statistic(fvfrequency 国籍)  ///
+>       statistic(fvpercent 国籍)     ///
+>       statistic(mean 转弯半径 排气量 油耗)          ///
+>       statistic(sd  转弯半径 排气量 油耗) nototals
+
+-----------------------------------------------------------------------------------
+                            |                     1978年维修记录                   
+                            |         1          2          3          4          5
+----------------------------+------------------------------------------------------
+价格                        |                                                      
+  Mean                      |    4564.5   5967.625   6429.233     6071.5       5913
+  Standard deviation        |  522.5519   3579.357    3525.14   1709.608   2615.763
+国籍=国内                   |                                                      
+  Factor variable frequency |         2          8         27          9          2
+  Factor variable percent   |    100.00     100.00      90.00      50.00      18.18
+国籍=国外                   |                                                      
+  Factor variable frequency |         0          0          3          9          9
+  Factor variable percent   |      0.00       0.00      10.00      50.00      81.82
+转弯半径(米)                |                                                      
+  Mean                      |   12.4968    13.2207   12.51712    11.7348   10.86196
+  Standard deviation        |  .4310523   .7630874   1.295467   1.434409   .4368908
+排气量(cc)                  |                                                      
+  Mean                      |  3129.936   3969.775   3769.579    2930.56   1820.458
+  Standard deviation        |  926.9944   1271.144   1506.504   1574.128   417.1767
+油量消耗(公升每一百公里)    |                                                      
+  Mean                      |  4.861111   5.408139   5.384831   4.873404   4.048131
+  Standard deviation        |  .9820927    1.05648   1.211085   1.226599   1.382546
+-----------------------------------------------------------------------------------
+
+. 
+. 
+. 
+. **# change label          
+. collect label dim 维修记录78 "1978年维修记录", modify
+
+. collect preview
+
+-----------------------------------------------------------------------------------
+                            |                     1978年维修记录                   
+                            |         1          2          3          4          5
+----------------------------+------------------------------------------------------
+价格                        |                                                      
+  Mean                      |    4564.5   5967.625   6429.233     6071.5       5913
+  Standard deviation        |  522.5519   3579.357    3525.14   1709.608   2615.763
+国籍=国内                   |                                                      
+  Factor variable frequency |         2          8         27          9          2
+  Factor variable percent   |    100.00     100.00      90.00      50.00      18.18
+国籍=国外                   |                                                      
+  Factor variable frequency |         0          0          3          9          9
+  Factor variable percent   |      0.00       0.00      10.00      50.00      81.82
+转弯半径(米)                |                                                      
+  Mean                      |   12.4968    13.2207   12.51712    11.7348   10.86196
+  Standard deviation        |  .4310523   .7630874   1.295467   1.434409   .4368908
+排气量(cc)                  |                                                      
+  Mean                      |  3129.936   3969.775   3769.579    2930.56   1820.458
+  Standard deviation        |  926.9944   1271.144   1506.504   1574.128   417.1767
+油量消耗(公升每一百公里)    |                                                      
+  Mean                      |  4.861111   5.408139   5.384831   4.873404   4.048131
+  Standard deviation        |  .9820927    1.05648   1.211085   1.226599   1.382546
+-----------------------------------------------------------------------------------
+
+. collect levelsof 维修记录78
+
+Collection: Table
+ Dimension: 维修记录78
+    Levels: 1 2 3 4 5
+
+. collect label list 维修记录78, all
+
+  Collection: Table
+   Dimension: 维修记录78
+       Label: 1978年维修记录
+Level labels:
+          .m  Total
+           1  
+           2  
+           3  
+           4  
+           5  
+
+. collect label levels 维修记录78 1 "优秀" 2 "良好" 3 "合格" 4 "一般" 5 "差"
+
+. collect preview
+
+-----------------------------------------------------------------------------------
+                            |                     1978年维修记录                   
+                            |      优秀       良好       合格       一般         差
+----------------------------+------------------------------------------------------
+价格                        |                                                      
+  Mean                      |    4564.5   5967.625   6429.233     6071.5       5913
+  Standard deviation        |  522.5519   3579.357    3525.14   1709.608   2615.763
+国籍=国内                   |                                                      
+  Factor variable frequency |         2          8         27          9          2
+  Factor variable percent   |    100.00     100.00      90.00      50.00      18.18
+国籍=国外                   |                                                      
+  Factor variable frequency |         0          0          3          9          9
+  Factor variable percent   |      0.00       0.00      10.00      50.00      81.82
+转弯半径(米)                |                                                      
+  Mean                      |   12.4968    13.2207   12.51712    11.7348   10.86196
+  Standard deviation        |  .4310523   .7630874   1.295467   1.434409   .4368908
+排气量(cc)                  |                                                      
+  Mean                      |  3129.936   3969.775   3769.579    2930.56   1820.458
+  Standard deviation        |  926.9944   1271.144   1506.504   1574.128   417.1767
+油量消耗(公升每一百公里)    |                                                      
+  Mean                      |  4.861111   5.408139   5.384831   4.873404   4.048131
+  Standard deviation        |  .9820927    1.05648   1.211085   1.226599   1.382546
+-----------------------------------------------------------------------------------
+
+. collect levelsof result
+
+Collection: Table
+ Dimension: result
+    Levels: fvfrequency fvpercent mean sd
+
+. collect recode result fvfrequency = 第一列 ///
+>                       fvpercent   = 第二列 ///
+>                       mean        = 第一列 ///
+>                       sd          = 第二列
+(60 items recoded in collection Table)
+
+. collect layout (var) (维修记录78#result[第一列 第二列])
+
+Collection: Table
+      Rows: var
+   Columns: 维修记录78#result[第一列 第二列]
+   Table 1: 6 x 10
+
+---------------------------------------------------------------------------------------------------------------------------------------
+                         |                                                 1978年维修记录                                              
+                         |          优秀                  良好                  合格                  一般                   差        
+                         |    第一列     第二列     第一列     第二列     第一列     第二列     第一列     第二列     第一列     第二列
+-------------------------+-------------------------------------------------------------------------------------------------------------
+价格                     |    4564.5   522.5519   5967.625   3579.357   6429.233    3525.14     6071.5   1709.608       5913   2615.763
+国籍=国内                |         2        100          8        100         27         90          9         50          2   18.18182
+国籍=国外                |         0          0          0          0          3         10          9         50          9   81.81818
+转弯半径(米)             |   12.4968   .4310523    13.2207   .7630874   12.51712   1.295467    11.7348   1.434409   10.86196   .4368908
+排气量(cc)               |  3129.936   926.9944   3969.775   1271.144   3769.579   1506.504    2930.56   1574.128   1820.458   417.1767
+油量消耗(公升每一百公里) |  4.861111   .9820927   5.408139    1.05648   5.384831   1.211085   4.873404   1.226599   4.048131   1.382546
+---------------------------------------------------------------------------------------------------------------------------------------
+
+. collect style header result, level(hide)
+
+. collect preview
+
+---------------------------------------------------------------------------------------------------------------------------------------
+                         |                                                 1978年维修记录                                              
+                         |          优秀                  良好                  合格                  一般                   差        
+-------------------------+-------------------------------------------------------------------------------------------------------------
+价格                     |    4564.5   522.5519   5967.625   3579.357   6429.233    3525.14     6071.5   1709.608       5913   2615.763
+国籍=国内                |         2        100          8        100         27         90          9         50          2   18.18182
+国籍=国外                |         0          0          0          0          3         10          9         50          9   81.81818
+转弯半径(米)             |   12.4968   .4310523    13.2207   .7630874   12.51712   1.295467    11.7348   1.434409   10.86196   .4368908
+排气量(cc)               |  3129.936   926.9944   3969.775   1271.144   3769.579   1506.504    2930.56   1574.128   1820.458   417.1767
+油量消耗(公升每一百公里) |  4.861111   .9820927   5.408139    1.05648   5.384831   1.211085   4.873404   1.226599   4.048131   1.382546
+---------------------------------------------------------------------------------------------------------------------------------------
+
+. collect style row stack, nobinder spacer
+
+. collect style cell border_block, border(right, pattern(nil))
+
+. collect preview
+
+-------------------------------------------------------------------------------------------------------------------------------------
+                                                                         1978年维修记录                                              
+                                  优秀                  良好                  合格                  一般                   差        
+-------------------------------------------------------------------------------------------------------------------------------------
+价格                        4564.5   522.5519   5967.625   3579.357   6429.233    3525.14     6071.5   1709.608       5913   2615.763
+                                                                                                                                     
+国籍                                                                                                                                 
+  国内                           2        100          8        100         27         90          9         50          2   18.18182
+  国外                           0          0          0          0          3         10          9         50          9   81.81818
+                                                                                                                                     
+转弯半径(米)               12.4968   .4310523    13.2207   .7630874   12.51712   1.295467    11.7348   1.434409   10.86196   .4368908
+排气量(cc)                3129.936   926.9944   3969.775   1271.144   3769.579   1506.504    2930.56   1574.128   1820.458   417.1767
+油量消耗(公升每一百公里)  4.861111   .9820927   5.408139    1.05648   5.384831   1.211085   4.873404   1.226599   4.048131   1.382546
+-------------------------------------------------------------------------------------------------------------------------------------
+
+. collect style cell var[价格 转弯半径 排气量 油耗]#result[第一列 第二列], nform
+> at(%6.1fc)
+
+. collect style cell var[价格 转弯半径 排气量 油耗]#result[第二列], ///
+>         sformat("(%s)")
+
+. collect style cell var[国籍]#result[第二列], ///
+>         nformat(%6.1f) sformat("%s%%")
+
+. collect preview
+
+--------------------------------------------------------------------------------------------------------------------------
+                                                                   1978年维修记录                                         
+                                优秀                良好                合格                一般                 差       
+--------------------------------------------------------------------------------------------------------------------------
+价格                      4564.5   (522.6)   5967.6   (3579.4)   6429.2   (3525.1)   6071.5   (1709.6)   5913.0   (2615.8)
+                                                                                                                          
+国籍                                                                                                                      
+  国内                         2    100.0%        8     100.0%       27      90.0%        9      50.0%        2      18.2%
+  国外                         0      0.0%        0       0.0%        3      10.0%        9      50.0%        9      81.8%
+                                                                                                                          
+转弯半径(米)                12.5     (0.4)     13.2      (0.8)     12.5      (1.3)     11.7      (1.4)     10.9      (0.4)
+排气量(cc)                3129.9   (927.0)   3969.8   (1271.1)   3769.6   (1506.5)   2930.6   (1574.1)   1820.5    (417.2)
+油量消耗(公升每一百公里)     4.9     (1.0)      5.4      (1.1)      5.4      (1.2)      4.9      (1.2)      4.0      (1.4)
+--------------------------------------------------------------------------------------------------------------------------
+
+. 
+. collect export tab1.tex, tableonly replace
+(collection Table exported to file tab1.tex)
+
+\fi
+
+
+\begin{table}[H]
+\centering
+\caption{My two-way table caption.}
+\begin{tabular}{lllllllllll}
+\cline{1-11}
+\multicolumn{1}{c}{} &
+  \multicolumn{10}{c}{1978年维修记录} \\
+\multicolumn{1}{c}{} &
+  \multicolumn{2}{c}{优秀} &
+  \multicolumn{2}{c}{良好} &
+  \multicolumn{2}{c}{合格} &
+  \multicolumn{2}{c}{一般} &
+  \multicolumn{2}{c}{差} \\
+\cline{1-11}
+\multicolumn{1}{l}{价格} &
+  \multicolumn{1}{r}{4564.5} &
+  \multicolumn{1}{r}{(522.6)} &
+  \multicolumn{1}{r}{5967.6} &
+  \multicolumn{1}{r}{(3579.4)} &
+  \multicolumn{1}{r}{6429.2} &
+  \multicolumn{1}{r}{(3525.1)} &
+  \multicolumn{1}{r}{6071.5} &
+  \multicolumn{1}{r}{(1709.6)} &
+  \multicolumn{1}{r}{5913.0} &
+  \multicolumn{1}{r}{(2615.8)} \\
+\multicolumn{1}{l}{} &
+  \multicolumn{1}{r}{} &
+  \multicolumn{1}{r}{} &
+  \multicolumn{1}{r}{} &
+  \multicolumn{1}{r}{} &
+  \multicolumn{1}{r}{} &
+  \multicolumn{1}{r}{} &
+  \multicolumn{1}{r}{} &
+  \multicolumn{1}{r}{} &
+  \multicolumn{1}{r}{} &
+  \multicolumn{1}{r}{} \\
+\multicolumn{1}{l}{国籍} &
+  \multicolumn{1}{r}{} &
+  \multicolumn{1}{r}{} &
+  \multicolumn{1}{r}{} &
+  \multicolumn{1}{r}{} &
+  \multicolumn{1}{r}{} &
+  \multicolumn{1}{r}{} &
+  \multicolumn{1}{r}{} &
+  \multicolumn{1}{r}{} &
+  \multicolumn{1}{r}{} &
+  \multicolumn{1}{r}{} \\
+\multicolumn{1}{l}{\hspace{1em}国内} &
+  \multicolumn{1}{r}{2} &
+  \multicolumn{1}{r}{100.0\%} &
+  \multicolumn{1}{r}{8} &
+  \multicolumn{1}{r}{100.0\%} &
+  \multicolumn{1}{r}{27} &
+  \multicolumn{1}{r}{90.0\%} &
+  \multicolumn{1}{r}{9} &
+  \multicolumn{1}{r}{50.0\%} &
+  \multicolumn{1}{r}{2} &
+  \multicolumn{1}{r}{18.2\%} \\
+\multicolumn{1}{l}{\hspace{1em}国外} &
+  \multicolumn{1}{r}{0} &
+  \multicolumn{1}{r}{0.0\%} &
+  \multicolumn{1}{r}{0} &
+  \multicolumn{1}{r}{0.0\%} &
+  \multicolumn{1}{r}{3} &
+  \multicolumn{1}{r}{10.0\%} &
+  \multicolumn{1}{r}{9} &
+  \multicolumn{1}{r}{50.0\%} &
+  \multicolumn{1}{r}{9} &
+  \multicolumn{1}{r}{81.8\%} \\
+\multicolumn{1}{l}{} &
+  \multicolumn{1}{r}{} &
+  \multicolumn{1}{r}{} &
+  \multicolumn{1}{r}{} &
+  \multicolumn{1}{r}{} &
+  \multicolumn{1}{r}{} &
+  \multicolumn{1}{r}{} &
+  \multicolumn{1}{r}{} &
+  \multicolumn{1}{r}{} &
+  \multicolumn{1}{r}{} &
+  \multicolumn{1}{r}{} \\
+\multicolumn{1}{l}{转弯半径(米)} &
+  \multicolumn{1}{r}{12.5} &
+  \multicolumn{1}{r}{(0.4)} &
+  \multicolumn{1}{r}{13.2} &
+  \multicolumn{1}{r}{(0.8)} &
+  \multicolumn{1}{r}{12.5} &
+  \multicolumn{1}{r}{(1.3)} &
+  \multicolumn{1}{r}{11.7} &
+  \multicolumn{1}{r}{(1.4)} &
+  \multicolumn{1}{r}{10.9} &
+  \multicolumn{1}{r}{(0.4)} \\
+\multicolumn{1}{l}{排气量(cc)} &
+  \multicolumn{1}{r}{3129.9} &
+  \multicolumn{1}{r}{(927.0)} &
+  \multicolumn{1}{r}{3969.8} &
+  \multicolumn{1}{r}{(1271.1)} &
+  \multicolumn{1}{r}{3769.6} &
+  \multicolumn{1}{r}{(1506.5)} &
+  \multicolumn{1}{r}{2930.6} &
+  \multicolumn{1}{r}{(1574.1)} &
+  \multicolumn{1}{r}{1820.5} &
+  \multicolumn{1}{r}{(417.2)} \\
+\multicolumn{1}{l}{油量消耗(公升每一百公里)} &
+  \multicolumn{1}{r}{4.9} &
+  \multicolumn{1}{r}{(1.0)} &
+  \multicolumn{1}{r}{5.4} &
+  \multicolumn{1}{r}{(1.1)} &
+  \multicolumn{1}{r}{5.4} &
+  \multicolumn{1}{r}{(1.2)} &
+  \multicolumn{1}{r}{4.9} &
+  \multicolumn{1}{r}{(1.2)} &
+  \multicolumn{1}{r}{4.0} &
+  \multicolumn{1}{r}{(1.4)} \\
+\cline{1-11}
+\end{tabular}
+\caption{Include table with \texttt{dd\_include}.}
+\end{table}
+
+\section{Conclusion}
+Now we can use \textbf{dyntext} to transform this tex file (example.tex) to 
+the desired tex file (\texttt{example\_out.tex}).
+
+\end{document}

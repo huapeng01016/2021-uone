@@ -1,0 +1,105 @@
+\documentclass{ctexart}
+
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{ulem}
+\usepackage[table]{xcolor}
+\usepackage{float}
+
+\begin{document}
+
+\section{Introduction}
+We use Stata's \textbf{dyntext} command with \texttt{dd\_do} tag 
+to produce the table, then use \textbf{collect export} to save 
+the table to a tex file. Then we may either use 
+\texttt{dd\_include} tag or LaTeX's input to include 
+the table in the document. 
+
+\section{Analysis}
+We first include a simple table.
+
+% produce the table with dd_do, the section is in a LaTeX
+% comment block since we only want the file it produced 
+% when processed through dyntext but not the block itself
+\iffalse
+<<dd_do>>
+use auto_zh.dta, clear
+collect clear
+table (国籍 维修记录78) (), totals(维修记录78)
+collect export tab0.tex, tableonly replace
+<</dd_do>>
+\fi
+
+We may include the table using \texttt{dd\_include} tag. It will 
+include the content of tab0.tex in the transformed tex file, hence 
+remove future dependency to tab0.tex.  
+
+\begin{table}[H]
+\centering
+\caption{My two-way table caption.}
+<<dd_include: tab0.tex>>
+\caption{Include table with \texttt{dd\_include}.}
+\end{table}
+
+
+Now we include a large table.
+
+% produce the table with dd_do, the section is in a LaTeX
+% comment block since we only want the file it produced 
+% when processed through dyntext but not the block itself
+\iffalse
+<<dd_do>>
+use auto_zh.dta, clear
+collect clear
+table (var) (维修记录78),              ///
+      statistic(mean 价格)          ///
+      statistic(sd 价格)				///      
+	  statistic(fvfrequency 国籍)  ///
+      statistic(fvpercent 国籍)     ///
+      statistic(mean 转弯半径 排气量 油耗)          ///
+      statistic(sd  转弯半径 排气量 油耗) nototals
+
+
+
+**# change label	  
+collect label dim 维修记录78 "1978年维修记录", modify
+collect preview
+collect levelsof 维修记录78
+collect label list 维修记录78, all
+collect label levels 维修记录78 1 "优秀" 2 "良好" 3 "合格" 4 "一般" 5 "差"
+collect preview
+collect levelsof result
+collect recode result fvfrequency = 第一列 ///
+                      fvpercent   = 第二列 ///
+                      mean        = 第一列 ///
+                      sd          = 第二列
+collect layout (var) (维修记录78#result[第一列 第二列])
+collect style header result, level(hide)
+collect preview
+collect style row stack, nobinder spacer
+collect style cell border_block, border(right, pattern(nil))
+collect preview
+collect style cell var[价格 转弯半径 排气量 油耗]#result[第一列 第二列], nformat(%6.1fc)
+collect style cell var[价格 转弯半径 排气量 油耗]#result[第二列], ///
+        sformat("(%s)")
+collect style cell var[国籍]#result[第二列], ///
+        nformat(%6.1f) sformat("%s%%")
+collect preview
+
+collect export tab1.tex, tableonly replace
+<</dd_do>>
+\fi
+
+
+\begin{table}[H]
+\centering
+\caption{My two-way table caption.}
+<<dd_include: tab1.tex>>
+\caption{Include table with \texttt{dd\_include}.}
+\end{table}
+
+\section{Conclusion}
+Now we can use \textbf{dyntext} to transform this tex file (example.tex) to 
+the desired tex file (\texttt{example\_out.tex}).
+
+\end{document}
