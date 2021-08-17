@@ -5,6 +5,7 @@
 \usepackage{ulem}
 \usepackage[table]{xcolor}
 \usepackage{float}
+\usepackage{adjustbox}
 
 \begin{document}
 
@@ -344,6 +345,8 @@ Collection: Table
 \begin{table}[H]
 \centering
 \caption{My two-way table caption.}
+\begin{adjustbox}{width=1\textwidth}
+\small
 \begin{tabular}{lllllllllll}
 \cline{1-11}
 \multicolumn{1}{c}{} &

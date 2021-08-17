@@ -5,6 +5,7 @@
 \usepackage{ulem}
 \usepackage[table]{xcolor}
 \usepackage{float}
+\usepackage{adjustbox}
 
 \begin{document}
 
@@ -94,6 +95,8 @@ collect export tab1.tex, tableonly replace
 \begin{table}[H]
 \centering
 \caption{My two-way table caption.}
+\begin{adjustbox}{width=1\textwidth}
+\small
 <<dd_include: tab1.tex>>
 \caption{Include table with \texttt{dd\_include}.}
 \end{table}
