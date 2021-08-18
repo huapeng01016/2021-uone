@@ -25,7 +25,7 @@ table (var) (维修记录78),              ///
       statistic(sd 价格) nototals
 	  
 **# change label	  
-collect label dim 维修记录78 "1978年维修记录", modify
+collect label dim 维修记录78 "维修记录(1978年)", modify
 collect preview
 
 **# change label for values of 维修记录	  
@@ -86,7 +86,7 @@ table (var) (维修记录78),              ///
 
 
 **# change label	  
-collect label dim 维修记录78 "1978年维修记录", modify
+collect label dim 维修记录78 "维修记录(1978年)", modify
 collect preview
 collect levelsof 维修记录78
 collect label list 维修记录78, all
