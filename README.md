@@ -48,23 +48,6 @@ collect style column, dups(center)
 collect preview
 ```
 
-The result is:
-
-|                                 | 1        |          | 2        |
-|                                 | (1)      | (2)      | (3)      |
-| ------------------------------- | -------- | -------- | -------- |
-| 油量消耗(公升每一百公里)        |          |          |          |
-|   Coefficient                   | .3281843 | .307205  | .296502  |
-|   Std. error                    | .1063047 | .1145879 | .1128835 |
-| 豪华                            |          |          |          |
-|   Coefficient                   | 9.355225 | 1.757733 | 15.64538 |
-|   Std. error                    | 9.354425 | 7.638619 | 88.32325 |
-| 豪华 # 油量消耗(公升每一百公里) |          |          |          |
-|   Coefficient                   |          | 1.333683 | .8374684 |
-|   Std. error                    |          | .980851  | .8163852 |
-| 质量良好                        |          |          |          |
-|   Coefficient                   |          |          | 1        |
-|   Std. error                    |          |          | 0        |
-| Intercept                       |          |          |          |
-|   Coefficient                   | 61.91038 | 82.41572 | 117.7643 |
-|   Std. error                    | 89.09944 | 135.4557 | 200.5851 |
+The result is the [following table](./src/group.html) with group and model as
+column headers.
+ 
